@@ -2,6 +2,7 @@ package com.example.api_multithread.Controller;
 
 import com.example.api_multithread.model.Task;
 import com.example.api_multithread.repository.TaskRepository;
+import com.example.api_multithread.model.TaskSemaphore;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -26,7 +27,7 @@ public class TaskController {
     private final Semaphore createSemaphore = new Semaphore(5);
 
     // Semáforo que permite apenas 1 thread de cada vez para delete e put
-    private final Semaphore editSemaphore = new Semaphore(1);
+    private final TaskSemaphore editSemaphore = new TaskSemaphore(null);
 
     @GetMapping
     public List<Task> listTasks() {
@@ -64,31 +65,47 @@ public class TaskController {
         return ResponseEntity.ok("Tarefa criada com sucesso - " + task.getTitle());
     }
 
+    @PostMapping("/acquire")
+    public ResponseEntity<String> requestEditTask(@RequestBody Task task) {
+        // Usar semáforo para garantir que apenas uma thread possa editar ao mesmo tempo
+        if(editSemaphore.isLocked()) {
+            return ResponseEntity.status(429).body("Alguém já está mexendo na tarefa. Tente novamente mais tarde.");
+        }
+        editSemaphore.acquire(task);
+        return ResponseEntity.ok("Solicitação de alteração da tarefa " + task.getId() + " recebida.");
+
+    }
+
+    @PostMapping("/release")
+    public ResponseEntity<String> releaseEditTask() {
+        // Usar semáforo para garantir que apenas uma thread possa editar ao mesmo tempo
+        editSemaphore.release();
+        return ResponseEntity.ok("Tarefa liberada.");
+
+    }
+
 
 
 
 
     @PutMapping("/{id}")
     public ResponseEntity<String> updateTask(@PathVariable Long id, @RequestBody Task task) {
-        // Usar semáforo para garantir que apenas uma thread possa editar ao mesmo tempo
+        // Usar semáforo para garantir que apenas uma thread possa editar simultaneamente
         try {
             System.out.println("Tentando adquirir semáforo de edição");
-            if(editSemaphore.availablePermits() == 0) {
-                System.out.println("Limite de threads atingido");
-                return ResponseEntity.status(429).body("Limite de threads atingido. Tente novamente mais tarde.");
+            if(editSemaphore.isLocked()) {
+                System.out.println("Tarefa em edição");
+                return ResponseEntity.status(429).body("Tarefa em edição. Tente novamente mais tarde.");
             }
-            editSemaphore.acquire();
+            editSemaphore.acquire(task);
 
             if (taskRepository.existsById(id)) {
                 task.setId(id);
-                Task updatedTask = taskRepository.save(task);
-                return ResponseEntity.ok("Tarefa atualizada com sucesso - ID: " + updatedTask.getId());
+                taskRepository.save(task);
+                return ResponseEntity.ok("Tarefa atualizada com sucesso - ID: " + id);
             } else {
                 return ResponseEntity.status(404).body("Erro: Tarefa não encontrada.");
             }
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            return ResponseEntity.status(500).body("Erro ao atualizar a tarefa.");
         } finally {
             // Liberar o "permite" do semáforo de edição
             editSemaphore.release();
@@ -97,14 +114,14 @@ public class TaskController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteTask(@PathVariable Long id) {
-        // Usar semáforo para garantir que apenas uma thread possa deletar ao mesmo tempo
+        // Usar semáforo para garantir que apenas uma thread possa editar simultaneamente
         try {
-            System.out.println("Tentando adquirir semáforo de remoção");
-            if(editSemaphore.availablePermits() == 0) {
-                System.out.println("Limite de threads atingido");
-                return ResponseEntity.status(429).body("Limite de threads atingido. Tente novamente mais tarde.");
+            System.out.println("Tentando adquirir semáforo de edição");
+            if(editSemaphore.isLocked()) {
+                System.out.println("Tarefa em edição");
+                return ResponseEntity.status(429).body("Tarefa em edição. Tente novamente mais tarde.");
             }
-            editSemaphore.acquire();
+            editSemaphore.acquire(new Task());
 
             if (taskRepository.existsById(id)) {
                 taskRepository.deleteById(id);
@@ -112,9 +129,6 @@ public class TaskController {
             } else {
                 return ResponseEntity.status(404).body("Erro: Tarefa não encontrada.");
             }
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            return ResponseEntity.status(500).body("Erro ao deletar a tarefa.");
         } finally {
             // Liberar o "permite" do semáforo de edição
             editSemaphore.release();
