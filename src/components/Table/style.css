@@ -1,0 +1,121 @@
+
+table{
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: .5rem;
+}
+
+td,th{
+    padding: .5rem;
+    border-bottom: 1px solid #bdbdbd;
+
+}
+
+thead{
+    color: #7e7e7e;
+    width: 100%;
+    cursor: pointer;
+}
+
+
+th span{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: .3rem;
+
+}
+
+.status{
+    display: flex;
+    align-items: center;
+    width: 100%;
+    gap: .3rem;
+    color:#2e2e2e;
+    font-weight: 700;
+    border-radius: 1rem;
+    padding: .2rem .5rem;
+    font-size: .8rem;
+    margin: .2rem;
+    width: 80%;
+}
+
+.status-pendente{
+    color: #670500;
+    background-color: #ff837d7a;
+}
+
+.status-andamento{
+    color: #5d4f00;
+    background-color: #ffe96f9a;
+
+}
+
+.status-concluido{
+    color: #004e00;
+    background-color: #7ffa8d92;
+}
+
+.actions{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: .5rem;
+
+}
+.btn{
+    padding: .5rem 1rem;
+    border: 1px solid transparent;
+    border-radius: .5rem;
+    color: #fff;
+    cursor: pointer;
+    margin: .5rem 0;
+    transition: .5s ease-in-out;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: .3rem;
+    font-weight: 700;
+}
+.btn:hover{
+    background-color: transparent;
+    transform: scale(1.05);
+}
+
+.btn-editar{
+    background-color: #f7d71f;
+}
+
+.btn-excluir{
+    background-color: #fb3737;
+}
+
+.btn-expandir{
+    background-color: #13375e;
+}
+
+
+.btn-editar:hover{
+    color: #f7d71f;
+    border: 1px solid #f7d71f;
+}
+
+.btn-excluir:hover{
+    color: #fb3737;
+    border: 1px solid #fb3737;
+}
+
+.btn-expandir:hover{
+    color: #13375e;
+    border: 1px solid #13375e;
+}
+
+
+.input-edit{
+    padding: .5rem;
+    border: 1px solid #bdbdbd;
+    border-radius: .5rem;
+    width: 100%;
+    margin: .5rem 0;
+}
+

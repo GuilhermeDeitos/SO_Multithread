@@ -1,0 +1,39 @@
+
+.before-table {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.before-table h2{
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #5a5a5a;
+    margin-bottom: 1rem;
+
+}
+
+.before-table section form{
+    display: flex;
+    align-items: center;
+}
+
+
+.before-table section form input{
+    padding: .5rem;
+    border: 1px solid #bdbdbd;
+    border-radius: .5rem;
+    width: 100%;
+    margin-right: .5rem;
+    transition: .3s;
+}
+.btn-add, .btn-find{
+    background-color: #2e2e2e;
+}
+
+.btn-add:hover, .btn-find:hover{
+    transform: scale(1.0);
+    color: #2e2e2e;
+    border: 1px solid #2e2e2e;
+}
