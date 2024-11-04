@@ -21,15 +21,16 @@ public class TaskSemaphore implements Runnable {
     }
 
     public void acquire(Task task) {
-        //Implementação do semáforo
+        //Implementação da aquisição semáforo (para garantir que apenas uma thread edite as tasks por vez)
         if(this.task == null || Objects.equals(this.task.getId(), task.getId())) {
+            System.out.println("Task " + task.getId() + " locked");
             isLocked = true;
         }
 
     }
 
     public void release() {
-        //Implementação do semáforo
+        //Implementação da liberação semáforo
         this.isLocked = false;
         this.task = null;
     }
